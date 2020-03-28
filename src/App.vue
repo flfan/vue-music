@@ -1,32 +1,28 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+  <div id="app" @touchmove.prevent>
+    <m-header></m-header>
+    <tab></tab>
+    <!-- 把dom缓存到内存中，不会每次都请求 -->
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
+    <!-- <player></player> -->
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script type="text/ecmascript-6">
+import MHeader from '@components/m-header/m-header'
+import Tab from '@components/tab/tab'
+// import Player from '@components/player/player'
 
-#nav {
-  padding: 30px;
+export default {
+  components: {
+    MHeader,
+    Tab
+    // Player
+  }
 }
+</script>
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
+<style scoped lang="stylus" rel="stylesheet/stylus">
 </style>

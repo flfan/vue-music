@@ -1,7 +1,14 @@
 <template>
   <div class="recommend">
       <div class="recommend-content">
-        <div class="slider-wrapper">
+        <div class="slider-wrapper" v-if="sliders.length">
+          <slider>
+            <div v-for="item in sliders" :key="item.id">
+              <a :href="item.linkUrl">
+                <img :src="item.picUrl">
+              </a>
+            </div>
+          </slider>
         </div>
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
@@ -13,18 +20,45 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getRecommend } from '@/api/recommend.js'
+import Slider from '@/base/slider/slider.vue'
+
+import { getRecommend, getDsicList } from '@/api/recommend.js'
 import { ERR_OK } from '@/api/config.js'
 
 export default {
+  components: {
+    Slider
+  },
+  data () {
+    return {
+      sliders: [],
+      dsicList: []
+    }
+  },
   created () {
     this._getRecommend()
+    this._getDiscList()
   },
   methods: {
     _getRecommend () {
       getRecommend().then(res => {
         if (res.code === ERR_OK) {
-          console.log(res.data)
+          // console.log(res.data)
+          this.sliders = res.data.slider
+        }
+      })
+    },
+    _getDiscList() {
+      // getDsicList().then((response) => {
+      //   console.log('response', response)
+      // }).catch((e) => {
+      //   console.log('error', e)
+      // })
+
+      getDsicList().then((res) => {
+        console.log(res)
+        if (res.code === ERR_OK) {
+          this.discList = res.data.list
         }
       })
     }

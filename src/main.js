@@ -5,6 +5,12 @@ import store from './store'
 
 import fastclick from 'fastclick'
 import '@styles/index.styl'
+import VueLazyload from 'vue-lazyload'
+
+Vue.use(VueLazyload, {
+  loading: require('@assets/image/loading.svg'),
+  error: require('@assets/image/error.jpg')
+})
 
 Vue.config.productionTip = false
 fastclick.attach(document.body)

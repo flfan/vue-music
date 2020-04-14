@@ -1,5 +1,12 @@
 <template>
-  <better-scroll class="listview" :data="data" ref="scrollListview">
+  <better-scroll
+    class="listview"
+    :data="data"
+    :listenScroll="listenScroll"
+    :probeType="probeType"
+    ref="scrollListview"
+    @scroll="handleBscroll"
+  >
     <ul>
       <li class="list-group" v-for="group in data" :key="group.title" ref="groupList">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -12,23 +19,48 @@
       </li>
     </ul>
     <!-- 索引字母表 -->
-    <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove">
+    <div
+      class="list-shortcut"
+      @touchstart.stop="onShortcutTouchStart"
+      @touchmove.stop.prevent="onShortcutTouchMove"
+    >
       <ul>
-        <li class="item" v-for="(item, index) in shortcutlist" :key="item" :data-index="index">
+        <li
+          :class="['item', {'current': currentIndex == index}]"
+          v-for="(item, index) in shortcutlist"
+          :key="item"
+          :data-index="index"
+        >
           {{item}}
         </li>
       </ul>
+    </div>
+    <div class="list-fixed" v-show="fixTitle" ref="listFixed">
+      <h1 class="fixed-title">{{fixTitle}}</h1>
+    </div>
+    <div class="loading-container" v-show="!data.length">
+      <loading/>
     </div>
   </better-scroll>
 </template>
 
 <script>
 import BetterScroll from '@/base/scroll/scroll.vue'
+import Loading from '@/base/loading/loading.vue'
 import { getData } from '@assets/js/dom'
 
 const ANCHOR_HEIGHT = 18
 
 export default {
+  data () {
+    return {
+      scrollY: -1,
+      currentIndex: 0,
+      listenScroll: true,
+      probeType: 3,
+      diff: 0 // group title
+    }
+  },
   props: {
     data: {
       type: Array,
@@ -36,7 +68,8 @@ export default {
     }
   },
   components: {
-    BetterScroll
+    BetterScroll,
+    Loading
   },
   computed: {
     shortcutlist() {
@@ -44,18 +77,75 @@ export default {
       return this.data.map((item) => {
         return item.title.substr(0, 1)
       })
+    },
+    fixTitle() {
+      let title
+      if (this.scrollY > 0) {
+        title = ''
+        return title
+      }
+      title = this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
+      return title
+    }
+  },
+  // activated() {
+  //   this._calculateGroupHeight()
+  // },
+  watch: {
+    data() {
+      setTimeout(() => {
+        this._calculateGroupHeight()
+      }, 20) // DOM 加载完成后计算
+    },
+    scrollY(newValue) {
+      const groupHeight = this.groupHeight
+      let scrollY = -newValue
+
+      if (newValue >= 0 || scrollY <= groupHeight[0]) {
+        this.diff = groupHeight[0] - scrollY
+        this.currentIndex = 0
+        return
+      }
+
+      for (let i = 0; i < groupHeight.length; i++) {
+        let height1 = groupHeight[i]
+        let height2 = groupHeight[i - 1]
+
+        if (scrollY < height1 && scrollY >= height2) {
+          this.currentIndex = i
+          this.diff = height1 - scrollY
+          // console.log(this.diff)
+          return
+        }
+      }
+    },
+    diff(newValue) {
+      // let height = this.$refs.listFixed.clientHeight
+      console.log(this.height, newValue)
+      let fixTop = (newValue > 0 && newValue < this.height) ? newValue - this.height : 0
+      if (this.fixTop === fixTop) return
+      this.fixTop = fixTop
+
+      this.$refs.listFixed.style.transform = `translate3d(0,${fixTop}px,0)`
     }
   },
   created() {
     this.touch = {}
+    this.groupHeight = []
+  },
+  mounted() {
+    setTimeout(() => {
+      this.height = this.$refs.listFixed.clientHeight // height 为 listFixed 的高度
+    }, 20)
   },
   methods: {
     onShortcutTouchStart(e) {
       let anchorIndex = getData(e.target, 'index')
       this.anchorIndex = anchorIndex
+      // this.currentIndex = anchorIndex
       let firstTouch = e.touches[0]
       this.touch.y1 = firstTouch.pageY
-      this._scrollTo(this.$refs.groupList[anchorIndex])
+      this._scrollTo(anchorIndex)
     },
     onShortcutTouchMove(e) {
       // console.log(e.target.style.fontSize = '20px')
@@ -68,10 +158,30 @@ export default {
       let anchorIndex = this.anchorIndex
 
       let index = parseInt(anchorIndex) + Math.floor(detail / ANCHOR_HEIGHT)
-      this._scrollTo(this.$refs.groupList[index])
+      this._scrollTo(index)
     },
-    _scrollTo(el) {
-      this.$refs.scrollListview.scrollToElement(el, 1000)
+    handleBscroll(pos) {
+      this.scrollY = pos.y
+    },
+    _scrollTo(index) {
+      if (!index && index !== 0) {
+        return
+      }
+      if (index > this.groupHeight.length - 1) {
+        index = this.groupHeight.length - 1
+      }
+      this.scrollY = this.groupHeight[index]
+      this.$refs.scrollListview.scrollToElement(this.$refs.groupList[index], 1000)
+    },
+    _calculateGroupHeight() {
+      let domList = this.$refs.groupList
+      let height = 0
+      let heightList = []
+      for (let i = 0, len = domList.length; i < len; i++) {
+        height += domList[i].clientHeight
+        heightList.push(height)
+      }
+      this.groupHeight = heightList
     }
   }
 

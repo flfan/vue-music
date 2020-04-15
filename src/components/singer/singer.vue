@@ -1,13 +1,20 @@
 <template>
   <div class="singer">
-    <list-view :data="singerList"></list-view>
+    <list-view :data="singerList" @itemClick="handleItemClick"></list-view>
+    <transition name="slide">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
 <script>
 import { getSingerList } from '@/api/singer.js'
 import { Singer } from '@assets/js/singer'
+import { mapMutations } from 'vuex'
+import { ERR_OK } from '@/api/config.js'
+
 import ListView from '@/base/listview/listview.vue'
+// import SingerDetail from '../singer-detail/singer-detail'
 
 const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10
@@ -25,13 +32,19 @@ export default {
     this._getSingerList()
   },
   methods: {
+    handleItemClick(singer) {
+      this.$router.push({
+        path: `/singer/${singer.id}`
+      })
+      this.setSinger(singer)
+    },
     _getSingerList() {
       getSingerList().then(res => {
-        if (res.code === 0) {
+        if (res.code === ERR_OK) {
           let singerList = res.data.list
-          // console.log(this.singerList)
           this.singerList = this._normalizeSinger(singerList)
         }
+        // console.log(res)
       })
     },
     _normalizeSinger(list) {
@@ -79,7 +92,10 @@ export default {
       })
 
       return hot.concat(ret)
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    })
   }
 }
 </script>
@@ -90,4 +106,9 @@ export default {
     top 88px
     bottom 0
     width 100%
+.slide-enter-active, .slide-leave-active
+    transition: all .5s
+
+.slide-enter, .slide-leave-to
+    transform: translate3d(100%, 0, 0)
 </style>

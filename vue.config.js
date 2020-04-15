@@ -31,7 +31,7 @@ module.exports = {
           console.log(e)
         })
       })
-
+      // 2020 QQ音乐 singer List 无法解决url 的 sign参数，无法使用
       app.get('/api/getSingerList', function (req, res) {
         const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
 
@@ -40,6 +40,35 @@ module.exports = {
             referer: 'https://y.qq.com/portal/singer_list.html',
             origin: 'https://y.qq.com'
           },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      // 2020 QQ音乐 singer Songs List 无法解决url 的 sign参数，无法使用
+      app.get('/api/getSingerDetail', function (req, res) {
+        const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
+        let TempData = JSON.parse(req.query.data)
+        // console.log(TempData)
+        axios.get(url, {
+          headers: {
+            referer: `https://y.qq.com/n/yqq/singer/${TempData.singerMid}.html`,
+            origin: 'https://y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+
+      app.get('/api/getSongVkey', function (req, res) {
+        // const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
+        const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+        axios.get(url, {
           params: req.query
         }).then((response) => {
           res.json(response.data)

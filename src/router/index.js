@@ -5,6 +5,7 @@ const Recommend = () => import('@components/recommend/recommend')
 const Singer = () => import('@components/singer/singer')
 const Rank = () => import('@components/rank/rank')
 const Search = () => import('@components/search/search')
+const SingerDetail = () => import('@components/singer-detail/singer-detail')
 // const Recommend = () => import(/* webpackChunkName: "recommend" */ 'components/recommend/recommend')
 // const Singer = () => import(/* webpackChunkName:'singer' */ 'components/singer/singer')
 // const Rank = () => import(/* webpackChunkName:'rank' */ 'components/rank/rank')
@@ -27,7 +28,13 @@ const routes = [
   },
   {
     path: '/singer',
-    component: Singer
+    component: Singer,
+    children: [
+      {
+        path: ':id',
+        component: SingerDetail
+      }
+    ]
   },
   {
     path: '/rank',

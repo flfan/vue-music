@@ -11,7 +11,7 @@
       <li class="list-group" v-for="group in data" :key="group.title" ref="groupList">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li class="list-group-item" v-for="item in group.items" :key="item.id">
+          <li class="list-group-item" @click="itemClick(item)" v-for="item in group.items" :key="item.id">
             <img class="avatar" v-lazy="item.singerPic">
             <span class="name">{{item.name}}</span>
           </li>
@@ -121,7 +121,8 @@ export default {
     },
     diff(newValue) {
       // let height = this.$refs.listFixed.clientHeight
-      console.log(this.height, newValue)
+      // console.log(this.height, newValue)
+      // console.log(this.fixTop)
       let fixTop = (newValue > 0 && newValue < this.height) ? newValue - this.height : 0
       if (this.fixTop === fixTop) return
       this.fixTop = fixTop
@@ -162,6 +163,9 @@ export default {
     },
     handleBscroll(pos) {
       this.scrollY = pos.y
+    },
+    itemClick(item) {
+      this.$emit('itemClick', item)
     },
     _scrollTo(index) {
       if (!index && index !== 0) {

@@ -36,7 +36,7 @@ let vendor = (() => {
 
   for (let k in transformNames) {
     if (elementStyle[transformNames[k]] !== undefined) {
-      console.log(k)
+      // console.log(k)
       return k
     }
   }

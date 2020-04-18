@@ -24,7 +24,7 @@
       @scroll="handleScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @songClick="handleSongClick" :songs="songs"></song-list>
       </div>
       <div class="loading-container" v-show="songs.length == 0">
         <loading></loading>
@@ -37,7 +37,9 @@
 import Bscroll from '@/base/scroll/scroll'
 import songList from '@/base/song-list/song-list'
 import Loading from '@/base/loading/loading.vue'
+
 import { prefixStyle } from '@assets/js/dom.js'
+import { mapActions } from 'vuex'
 
 const TITLE_HRIGHT = 40
 const transform = prefixStyle('transform')
@@ -83,6 +85,13 @@ export default {
     handleBack() {
       this.$router.back()
     },
+    handleSongClick(song, index) {
+      // console.log(song, index)
+      this.selectPlayer({
+        list: this.songs,
+        index: index
+      })
+    },
     _setBscrollTop() {
       let bscroll = this.$refs.bscroll
       let top = this.$refs.bgImage.clientHeight
@@ -90,7 +99,10 @@ export default {
 
       bscroll.$el.style.top = top + 'px'
       // console.log(top, bscroll)
-    }
+    },
+    ...mapActions({
+      selectPlayer: 'selectPlayer'
+    })
   },
   watch: {
     scrollY(newY) {

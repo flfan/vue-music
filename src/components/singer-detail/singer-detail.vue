@@ -49,7 +49,11 @@ export default {
       }
       getSingerDetail(this.singer.id).then(res => {
         if (res.code === ERR_OK) {
-          this.songs = this._normalizeSongs(res.data.list)
+          let songs = this._normalizeSongs(res.data.list)
+          setTimeout(() => { // 当songs全部获取完之后 再把值传给 this.songs
+            this.songs = songs
+          }, 2000)
+          // this.songs = this._normalizeSongs(res.data.list)
           // console.log(this.songs)
         }
       })

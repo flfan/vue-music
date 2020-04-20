@@ -1,5 +1,30 @@
 import axios from 'axios'
 
+export function getLyric(songmid) {
+  const url = '/api/getLyric'
+  const data = {
+    '-': 'MusicJsonCallback_lrc',
+    pcachetime: +new Date(),
+    songmid: songmid,
+    g_tk_new_20200303: 5381,
+    g_tk: 5381,
+    loginUin: 0,
+    hostUin: 0,
+    format: 'json',
+    inCharset: 'utf8',
+    outCharset: 'utf-8',
+    notice: 0,
+    platform: 'yqq.json',
+    needNewCode: 0
+  }
+
+  return axios.get(url, {
+    params: data
+  }).then(res => {
+    return Promise.resolve(res.data)
+  })
+}
+
 export function getSongVkey(songmid) {
   const url = '/api/getSongVkey'
   const data = {

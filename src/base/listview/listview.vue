@@ -140,6 +140,9 @@ export default {
     }, 20)
   },
   methods: {
+    refresh() {
+      this.$refs.scrollListview.refresh()
+    },
     onShortcutTouchStart(e) {
       let anchorIndex = getData(e.target, 'index')
       this.anchorIndex = anchorIndex

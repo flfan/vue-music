@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" ref="recommend">
     <better-scroll class="recommend-content" :data="discList" ref="BScroll">
       <div>
         <div class="slider-wrapper" v-if="sliders.length">
@@ -42,8 +42,10 @@ import Loading from '@/base/loading/loading.vue'
 
 import { getRecommend, getDsicList } from '@/api/recommend.js'
 import { ERR_OK } from '@/api/config.js'
+import { playlistMixin } from '@assets/js/mixin.js'
 
 export default {
+  mixins: [playlistMixin],
   components: {
     Slider,
     BetterScroll,
@@ -60,6 +62,11 @@ export default {
     this._getDiscList()
   },
   methods: {
+    handlePlaylist(playList) {
+      let bottom = playList.length > 0 ? '60px' : ''
+      this.$refs.recommend.style.bottom = bottom
+      this.$refs.BScroll.refresh()
+    },
     _getRecommend() {
       getRecommend().then(res => {
         if (res.code === ERR_OK) {

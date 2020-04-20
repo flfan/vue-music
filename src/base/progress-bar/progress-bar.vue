@@ -56,7 +56,9 @@ export default {
       this.touch.initiated = false
     },
     handleBarClick(e) {
-      this._setProgressWidth(e.offsetX)
+      const rect = this.$refs.progressBar.getBoundingClientRect()
+      // console.log(rect)
+      this._setProgressWidth(e.pageX - rect.left)
       this._triggerPercent()
     },
     _triggerPercent() {

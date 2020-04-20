@@ -1,3 +1,7 @@
+import { getLyric } from '@/api/song.js'
+import { ERR_OK } from '@/api/config.js'
+import { Base64 } from 'js-base64'
+
 export default class Song {
   constructor({ id, mid, singer, name, album, duration, image, url }) {
     this.id = id
@@ -8,6 +12,24 @@ export default class Song {
     this.image = image
     this.url = url
     this.singer = singer
+  }
+
+  songGetLyric() {
+    if (this.Lyric) {
+      return Promise.resolve(this.Lyric)
+    }
+    return new Promise((resolve, reject) => {
+      getLyric(this.mid).then(res => {
+        if (res.code === ERR_OK) {
+          this.Lyric = Base64.decode(res.lyric)
+          // console.log(this.Lyric)
+          resolve(this.Lyric)
+        } else {
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject('no Lyric')
+        }
+      })
+    })
   }
 }
 

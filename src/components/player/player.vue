@@ -311,12 +311,13 @@ export default {
     },
     // player 控制
     togglePlaying() {
-      if (!this.canPlaySong) {
-        return
-      }
+      // if (!this.canPlaySong) { // 影响pre 与 next button 触发的 togglePlaying() 调用
+      //   return
+      // }
       if (this.currentLyric) {
         this.currentLyric.togglePlay()
       }
+      console.log('playingdsf;laskfj;jk')
       this.setPlayingState(!this.playing)
     },
     prevIconClick() {

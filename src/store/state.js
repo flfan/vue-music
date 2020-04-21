@@ -12,7 +12,8 @@ const state = {
   // 播放类型
   mode: Config.playMode.sequence,
   // 当前播放索引
-  currentIndex: -1
+  currentIndex: -1,
+  disc: {}
 }
 
 export default state

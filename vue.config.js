@@ -57,6 +57,22 @@ module.exports = {
           console.log(e)
         })
       })
+      app.get('/api/getDiscSongList', function (req, res) {
+        const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+        // let TempData = JSON.parse(req.query)
+        // console.log(req.query.disstid)
+        axios.get(url, {
+          headers: {
+            referer: `https://y.qq.com/n/yqq/playlist/${req.query.disstid}.html`,
+            origin: 'https://y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
       // 2020 QQ音乐 singer List 无法解决url 的 sign参数，无法使用
       app.get('/api/getSingerList', function (req, res) {
         const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'

@@ -15,7 +15,7 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li v-for="item in discList" class="item" :key="item.dissname">
+            <li @click="songListClick(item)" v-for="item in discList" class="item" :key="item.dissname">
               <div class="icon">
                 <!-- use vue lazyLoad -->
                 <img v-lazy="item.imgurl" width="60" height="60" />
@@ -32,6 +32,9 @@
         <loading></loading>
       </div>
     </better-scroll>
+    <transition name="slide">
+        <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -43,6 +46,7 @@ import Loading from '@/base/loading/loading.vue'
 import { getRecommend, getDsicList } from '@/api/recommend.js'
 import { ERR_OK } from '@/api/config.js'
 import { playlistMixin } from '@assets/js/mixin.js'
+import { mapMutations } from 'vuex'
 
 export default {
   mixins: [playlistMixin],
@@ -62,6 +66,13 @@ export default {
     this._getDiscList()
   },
   methods: {
+    songListClick(item) {
+      // console.log(item)
+      this.$router.push({
+        path: `/recommend/${item.dissid}`
+      })
+      this.setDisc(item)
+    },
     handlePlaylist(playList) {
       let bottom = playList.length > 0 ? '60px' : ''
       this.$refs.recommend.style.bottom = bottom
@@ -95,7 +106,10 @@ export default {
         this.checkLoaded = true
         // console.log('img')
       }
-    }
+    },
+    ...mapMutations({
+      setDisc: 'SET_DISC'
+    })
   }
 }
 </script>
@@ -167,6 +181,12 @@ export default {
       top: 50%;
       transform: translateY(-50%);
     }
+  }
+  .slide-enter-active, .slide-leave-active{
+    transition: all .5s;
+  }
+  .slide-enter, .slide-leave-to{
+    transform: translate3d(100%, 0, 0);
   }
 }
 </style>

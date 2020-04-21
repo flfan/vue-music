@@ -11,17 +11,17 @@ export const playlistMixin = {
   },
   mounted() {
     this.handlePlaylist(this.playList)
-    console.log('mounted')
+    // console.log('mounted')
   },
   // keep-alive 组件激活时调用。
   activated() {
     this.handlePlaylist(this.playList)
-    console.log('activated')
+    // console.log('activated')
   },
   watch: {
     playList(newVal) {
       this.handlePlaylist(newVal)
-      console.log('watch')
+      // console.log('watch')
     }
   },
   methods: {

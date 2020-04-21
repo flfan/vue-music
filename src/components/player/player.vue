@@ -317,7 +317,7 @@ export default {
       if (this.currentLyric) {
         this.currentLyric.togglePlay()
       }
-      console.log('playingdsf;laskfj;jk')
+      // console.log('playingdsf;laskfj;jk')
       this.setPlayingState(!this.playing)
     },
     prevIconClick() {

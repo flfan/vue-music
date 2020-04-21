@@ -100,7 +100,7 @@ export default {
       })
     },
     randPlayBtn() {
-      console.log('random')
+      // console.log('random')
       this.randomPlay(this.songs)
     },
     _setBscrollTop() {

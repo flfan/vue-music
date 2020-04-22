@@ -13,7 +13,8 @@ const state = {
   mode: Config.playMode.sequence,
   // 当前播放索引
   currentIndex: -1,
-  disc: {}
+  disc: {},
+  rankList: {}
 }
 
 export default state

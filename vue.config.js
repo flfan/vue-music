@@ -15,6 +15,7 @@ module.exports = {
       .set('@components', resolve('./src/components'))
   },
   devServer: {
+    disableHostCheck: true,
     before(app) {
       app.get('/api/getDiscList', function (req, res) {
         const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
@@ -59,12 +60,24 @@ module.exports = {
       })
       app.get('/api/getDiscSongList', function (req, res) {
         const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
-        // let TempData = JSON.parse(req.query)
-        // console.log(req.query.disstid)
         axios.get(url, {
           headers: {
             referer: `https://y.qq.com/n/yqq/playlist/${req.query.disstid}.html`,
             origin: 'https://y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      app.get('/api/getRankList', function (req, res) {
+        const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+        axios.get(url, {
+          headers: {
+            referer: 'https://i.y.qq.com/n2/m/index.html?tab=toplist',
+            origin: 'https://i.y.qq.com'
           },
           params: req.query
         }).then((response) => {

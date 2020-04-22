@@ -22,9 +22,9 @@
       class="list"
       ref="bscroll"
       @scroll="handleScroll"
-    >
+      >
       <div class="song-list-wrapper">
-        <song-list @songClick="handleSongClick" :songs="songs"></song-list>
+        <song-list @songClick="handleSongClick" :songs="songs" :showRank="showRank"></song-list>
       </div>
       <div class="loading-container" v-show="songs.length == 0">
         <loading></loading>
@@ -60,6 +60,10 @@ export default {
     bgImage: {
       type: String,
       default: ''
+    },
+    showRank: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

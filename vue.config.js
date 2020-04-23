@@ -86,6 +86,34 @@ module.exports = {
           console.log(e)
         })
       })
+      app.get('/api/getSearchHotKey', function (req, res) {
+        const url = 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg'
+        axios.get(url, {
+          headers: {
+            referer: 'https://y.qq.com/portal/search.html',
+            origin: 'https://y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      app.get('/api/getSearchMusic', function (req, res) {
+        const url = 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp'
+        axios.get(url, {
+          headers: {
+            referer: 'https://y.qq.com/?ADTAG=myqq',
+            origin: 'https://y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
       // 2020 QQ音乐 singer List 无法解决url 的 sign参数，无法使用
       app.get('/api/getSingerList', function (req, res) {
         const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'

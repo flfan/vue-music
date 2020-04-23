@@ -1,4 +1,4 @@
-import { getLyric } from '@/api/song.js'
+import { getLyric, getSongVkey } from '@/api/song.js'
 import { ERR_OK } from '@/api/config.js'
 import { Base64 } from 'js-base64'
 
@@ -12,6 +12,27 @@ export default class Song {
     this.image = image
     this.url = url
     this.singer = singer
+  }
+
+  getSongUrl() {
+    if (this.url) {
+      return Promise.resolve(this.url)
+    }
+    return new Promise((resolve, reject) => {
+      getSongVkey(this.mid).then(res => {
+        if (res.code === ERR_OK) {
+          let purl = res.req_0.data.midurlinfo[0].purl
+          if (purl) {
+            let tempurl = 'http://isure.stream.qqmusic.qq.com/' + purl // 音乐播放地址
+            this.url = tempurl
+          }
+          resolve(this.url)
+        } else {
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject('no song play')
+        }
+      })
+    })
   }
 
   songGetLyric() {

@@ -27,11 +27,17 @@ const mutations = {
   [types.SET_CURRENT_INDEX](state, index) {
     state.currentIndex = index
   },
+
   [types.SET_DISC](state, disc) {
     state.disc = disc
   },
+
   [types.SET_RANK_LIST](state, rankList) {
     state.rankList = rankList
+  },
+
+  [types.SET_SEARCH_HISTORY](state, history) {
+    state.searchHistory = history
   }
 }
 

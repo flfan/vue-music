@@ -1,7 +1,13 @@
 <template>
-  <bscroll ref="suggest" class="suggest" @scrollToEnd="handleScrollToEnd" :data="searchResult" :pullup="pullup">
+  <bscroll  ref="suggest"
+            class="suggest"
+            @scrollToEnd="handleScrollToEnd"
+            @beforeScroll="listScroll"
+            :beforeScroll="beforeScroll"
+            :data="searchResult"
+            :pullup="pullup">
     <ul class="suggest-list">
-      <li class="suggest-item" v-for="(item,index) in searchResult" :key="index">
+      <li class="suggest-item" @click="handleItemClick(item)" v-for="(item,index) in searchResult" :key="index">
         <div class="icon">
           <i :class="getIconCls(item)"></i>
         </div>
@@ -11,6 +17,9 @@
       </li>
       <loading v-show="hasMore"></loading>
     </ul>
+    <div v-show="!hasMore && !searchResult.length" class="no-result-wrapper">
+      <no-result title="QAQ，暂无搜索结果~"></no-result>
+    </div>
   </bscroll>
 </template>
 
@@ -19,9 +28,12 @@ import { getSearchResult } from '@/api/search.js'
 import { ERR_OK } from '@/api/config.js'
 import { getSongVkey } from '@/api/song.js' // 获取音乐播放地址
 import { createSong } from '@assets/js/song'
+import { Singer } from '@assets/js/singer'
+import { mapMutations, mapActions } from 'vuex'
 
 import Bscroll from '@/base/scroll/scroll'
 import Loading from '@/base/loading/loading'
+import NoResult from '@/base/no-result/no-result'
 
 const TYPE_SINGER = 'singer'
 
@@ -41,14 +53,31 @@ export default {
       searchResult: [],
       page: 1,
       pullup: true,
-      hasMore: true
+      hasMore: true,
+      beforeScroll: true
     }
   },
   components: {
     Bscroll,
-    Loading
+    Loading,
+    NoResult
   },
   methods: {
+    refresh() {
+      this.$refs.suggest.refresh()
+    },
+    handleItemClick(item) {
+      if (item.type === TYPE_SINGER) {
+        let singer = new Singer(item.zhida_singer.singerMID, item.zhida_singer.singerName)
+        this.setSinger(singer)
+        this.$router.push({
+          path: `/search/${singer.id}`
+        })
+      } else {
+        this.insertSong(item)
+      }
+      this.$emit('itemClick')
+    },
     handleScrollToEnd() {
       if (!this.hasMore) {
         return
@@ -87,6 +116,9 @@ export default {
       } else {
         return `${item.name} -- ${item.singer}`
       }
+    },
+    listScroll() {
+      this.$emit('listScroll')
     },
     _checkMore(data) {
       const song = data.song
@@ -152,7 +184,13 @@ export default {
         }
       })
       return ret
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    }),
+    ...mapActions({
+      insertSong: 'insertSong'
+    })
   },
   watch: {
     query(newquery) {

@@ -1,4 +1,5 @@
 import { Config } from '@assets/js/config.js'
+import { loadSearch } from '@assets/js/cache.js'
 
 const state = {
   singer: {},
@@ -14,7 +15,8 @@ const state = {
   // 当前播放索引
   currentIndex: -1,
   disc: {},
-  rankList: {}
+  rankList: {},
+  searchHistory: loadSearch()
 }
 
 export default state

@@ -1,12 +1,14 @@
 <template>
   <div class="search-box">
     <i class="icon-search"></i>
-    <input :placeholder="placeholder" v-model="query" class="box">
+    <input ref="query" :placeholder="placeholder" v-model="query" class="box">
     <i v-show="query" class="icon-dismiss" @click="clear"></i>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import { debounce } from '@assets/js/util.js'
+
 export default {
   props: {
     placeholder: {
@@ -25,10 +27,13 @@ export default {
     },
     setQuery(query) {
       this.query = query
+    },
+    blur() {
+      this.$refs.query.blur()
     }
   },
   created() {
-    this.$watch('query', (newQuery) => {
+    this.$watch('query', debounce((newQuery) => {
       let regExp = /^\s+$/
       let re = regExp.test(newQuery)
       // console.log(re)
@@ -36,7 +41,7 @@ export default {
         return
       }
       this.$emit('queryChange', newQuery)
-    })
+    }, 200))
   }
 }
 </script>

@@ -14,3 +14,17 @@ export function shuffle(arr) {
   }
   return _arr
 }
+
+export function debounce(func, delay) {
+  let timer
+  // console.log('aaaaaa')
+  return (...args) => {
+    // console.log('bbbbbbb')
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
+  }
+}

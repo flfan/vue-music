@@ -1,6 +1,6 @@
 const express = require('express')
 const axios = require('axios')
-const compression = require('compression')
+// const compression = require('compression')
 // const bodyParser = require('body-parser')
 
 const app = express()
@@ -103,7 +103,7 @@ app.get('/api/getSearchMusic', function (req, res) {
     console.log(e)
   })
 })
-app.use(compression())
+// app.use(compression())
 const port = 8080
 app.use(express.static('./dist'))
 module.exports = app.listen(port, err => {

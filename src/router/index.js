@@ -8,6 +8,7 @@ const Search = () => import('@components/search/search')
 const SingerDetail = () => import('@components/singer-detail/singer-detail')
 const Disc = () => import('@components/disc/disc')
 const RankList = () => import('@components/rank-list/rank-list')
+const UserCenter = () => import('@components/user-center/user-center')
 // const Recommend = () => import(/* webpackChunkName: "recommend" */ 'components/recommend/recommend')
 // const Singer = () => import(/* webpackChunkName:'singer' */ 'components/singer/singer')
 // const Rank = () => import(/* webpackChunkName:'rank' */ 'components/rank/rank')
@@ -15,7 +16,7 @@ const RankList = () => import('@components/rank-list/rank-list')
 // const SingerDetail = () => import(/* webpackChunkName:'singer' */ 'components/singer-detail/singer-detail')
 // const Disc = () => import(/* webpackChunkName:'disc' */ 'components/disc/disc')
 // const TopList = () => import(/* webpackChunkName:'toplist' */ 'components/top-list/top-list')
-// const UserCenter = () => import(/* webpackChunkName:'user' */ 'components/user-center/user-center')
+// const UserCenter = () => import(/* webpackChunkName:'user' */ '@components/user-center/user-center')
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,10 @@ const routes = [
   {
     path: '/',
     redirect: '/recommend'
+  },
+  {
+    path: '/user',
+    component: UserCenter
   },
   {
     path: '/recommend',

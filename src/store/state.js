@@ -1,5 +1,5 @@
 import { Config } from '@assets/js/config.js'
-import { loadSearch } from '@assets/js/cache.js'
+import { loadSearch, loadPlay, loadFavorite } from '@assets/js/cache.js'
 
 const state = {
   singer: {},
@@ -16,7 +16,9 @@ const state = {
   currentIndex: -1,
   disc: {},
   rankList: {},
-  searchHistory: loadSearch()
+  searchHistory: loadSearch(),
+  playHistory: loadPlay(),
+  favoriteHistory: loadFavorite()
 }
 
 export default state

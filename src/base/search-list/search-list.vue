@@ -20,6 +20,11 @@ export default {
       default: () => []
     }
   },
+  // mounted() {
+  //   setTimeout(() => {
+  //     this.$refs.
+  //   })
+  // },
   methods: {
     selectItem(item) {
       this.$emit('select', item)

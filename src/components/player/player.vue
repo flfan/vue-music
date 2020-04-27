@@ -64,7 +64,7 @@
           </div>
           <div class="operators">
             <div class="icon i-left">
-              <i @click="modeIconClick" :class="modeIcon"></i>
+              <i @click="changeMode" :class="iconMode"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <i @click="prevIconClick" class="icon-prev"></i>
@@ -75,8 +75,8 @@
             <div class="icon i-right" :class="disableCls">
               <i @click="nextIconClick" class="icon-next"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-favorite"></i>
+            <div class="icon i-right" @click="toggleFavorite(currentSong)">
+              <i class="icon" :class="getFavoriteIcon(currentSong)" ></i>
             </div>
           </div>
         </div>
@@ -99,11 +99,12 @@
             <i class="icon-mini" :class="miniPlayingIcon" @click.stop="togglePlaying"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <play-list ref="playlist"></play-list>
     <!-- <audio :src="currentSong.url" ref="audio" autoplay="autoplay"></audio> -->
     <audio :src="currentSong.url" ref="audio"
            @canplay="playReady"
@@ -115,20 +116,22 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { prefixStyle } from '@assets/js/dom.js'
 import { Config } from '@assets/js/config.js'
-import { shuffle } from '@assets/js/util.js'
 import animations from 'create-keyframe-animation'
 import LyricParser from 'lyric-parser'
+import { playerMixin } from '@assets/js/mixin'
 
 import ProgressBar from '@/base/progress-bar/progress-bar.vue'
 import ProgressCircle from '@/base/progress-circle/progress-circle.vue'
 import Bscroll from '@/base/scroll/scroll.vue'
+import PlayList from '@components/playlist/playlist.vue'
 
 const TRANSFORM = prefixStyle('transform')
 
 export default {
+  mixins: [playerMixin],
   data() {
     return {
       canPlaySong: false, // audio是否已经可以播放
@@ -143,7 +146,8 @@ export default {
   components: {
     ProgressBar,
     ProgressCircle,
-    Bscroll
+    Bscroll,
+    PlayList
   },
   computed: {
     normalPlayingIcon() {
@@ -151,9 +155,6 @@ export default {
     },
     miniPlayingIcon() {
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
-    },
-    modeIcon() {
-      return this.mode === Config.playMode.sequence ? 'icon-sequence' : this.mode === Config.playMode.loop ? 'icon-loop' : 'icon-random'
     },
     cdRotate() {
       return this.playing ? 'play' : 'play pause'
@@ -166,17 +167,18 @@ export default {
       return this.currentTime / this.currentSong.duration
     },
     ...mapGetters({
-      playList: 'playList',
+      // playList: 'playList',
       fullScreen: 'fullScreen',
       currentSong: 'currentSong',
       playing: 'playing',
-      currentIndex: 'currentIndex',
-      mode: 'mode',
-      sequenceList: 'sequenceList'
+      currentIndex: 'currentIndex'
+      // mode: 'mode',
+      // sequenceList: 'sequenceList'
     })
   },
   watch: {
     currentSong(newSong, oldSong) {
+      if (!newSong) return
       if (newSong.id === oldSong.id) return
 
       if (this.currentLyric) {
@@ -187,6 +189,7 @@ export default {
       //   this.parserLyric()
       // })
       setTimeout(() => { // 解决微信前台切后台问题
+        if (!this.playing) return
         this.$refs.audio.play()
         this.parserLyric()
       }, 1000)
@@ -202,6 +205,10 @@ export default {
     this.touch = {}
   },
   methods: {
+    // playlist
+    showPlaylist() {
+      this.$refs.playlist.show()
+    },
     // middle touch
     middleTouchstart(e) {
       this.touch.initiated = true
@@ -287,28 +294,6 @@ export default {
     handleMiniPlayer() {
       this.setFullScreen(true)
     },
-    modeIconClick() {
-      let mode = this.mode
-      mode++
-      if (mode === 3) {
-        mode = 0
-      }
-      this.setPlayMode(mode)
-      let list = null
-      if (mode === Config.playMode.random) {
-        list = shuffle(this.sequenceList)
-      } else {
-        list = this.sequenceList
-      }
-      this._resetCurrentIndex(list)
-      this.setPlayList(list)
-    },
-    _resetCurrentIndex(list) {
-      let index = list.findIndex(item => {
-        return item.id === this.currentSong.id
-      })
-      this.setCurrentIndex(index)
-    },
     // player 控制
     togglePlaying() {
       // if (!this.canPlaySong) { // 影响pre 与 next button 触发的 togglePlaying() 调用
@@ -361,6 +346,7 @@ export default {
     // audio playReady
     playReady() {
       this.canPlaySong = true
+      this.savePlayHistory(this.currentSong)
     },
     // audio playError
     playError() {
@@ -470,10 +456,13 @@ export default {
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
-      setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayMode: 'SET_PLAY_MODE',
-      setPlayList: 'SET_PLAYLIST'
+      setPlayingState: 'SET_PLAYING_STATE'
+      // setCurrentIndex: 'SET_CURRENT_INDEX',
+      // setPlayMode: 'SET_PLAY_MODE',
+      // setPlayList: 'SET_PLAYLIST'
+    }),
+    ...mapActions({
+      savePlayHistory: 'savePlayHistory'
     })
   }
 
@@ -719,8 +708,8 @@ export default {
         .icon-play-mini, .icon-pause-mini, .icon-playlist
           font-size: 30px
           color: $color-theme-d
-        .icon-playlist
-          color: $color-theme
+        // .icon-playlist
+        //   color: $color-theme
         .icon-mini
           font-size: 32px
           position: absolute

@@ -31,6 +31,10 @@ export default {
     beforeScroll: {
       type: Boolean,
       default: false
+    },
+    refreshDelay: {
+      type: Number,
+      default: 20
     }
   },
   mounted () {
@@ -95,7 +99,9 @@ export default {
   },
   watch: {
     data () {
-      this.refresh()
+      setTimeout(() => {
+        this.refresh()
+      }, this.refreshDelay)
     }
   }
 

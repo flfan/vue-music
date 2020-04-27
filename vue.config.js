@@ -6,7 +6,7 @@ function resolve (dir) {
 }
 
 module.exports = {
-  publicPath: '/zeroMusic',
+  publicPath: '/',
   chainWebpack: config => {
     config.resolve.alias
       .set('@', resolve('./src'))

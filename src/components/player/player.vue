@@ -107,7 +107,7 @@
     <play-list ref="playlist"></play-list>
     <!-- <audio :src="currentSong.url" ref="audio" autoplay="autoplay"></audio> -->
     <audio :src="currentSong.url" ref="audio"
-           @canplay="playReady"
+           @play="playReady"
            @error="playError"
            @timeupdate="audioTimeUpdate"
            @ended="audioEnd"
@@ -188,7 +188,8 @@ export default {
       //   this.$refs.audio.play()
       //   this.parserLyric()
       // })
-      setTimeout(() => { // 解决微信前台切后台问题
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => { // 解决微信前台切后台问题
         if (!this.playing) return
         this.$refs.audio.play()
         this.parserLyric()
@@ -266,6 +267,7 @@ export default {
     // lyric 控制
     parserLyric() {
       this.currentSong.songGetLyric().then(res => {
+        if (this.currentSong.Lyric !== res) return
         this.currentLyric = new LyricParser(res, this.handleLyric)
         if (this.playing) {
           this.currentLyric.play()
